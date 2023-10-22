@@ -32,6 +32,7 @@ defmodule Animelodica.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:bcrypt_elixir, "~> 3.0"},
       {:phoenix, "~> 1.7.9"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.10"},
@@ -48,7 +49,10 @@ defmodule Animelodica.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
-      {:bandit, ">= 0.0.0"}
+      {:bandit, ">= 0.0.0"},
+      {:ueberauth, "~> 0.10"},
+      {:ueberauth_google, "~> 0.10"},
+      {:ueberauth_discord, "~> 0.6"}
     ]
   end
 
