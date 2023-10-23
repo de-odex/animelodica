@@ -3,7 +3,7 @@ defmodule Animelodica.Accounts.User do
   import Ecto.Changeset
 
   schema "users" do
-    field :email, :string
+    field :identifier, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
@@ -36,17 +36,17 @@ defmodule Animelodica.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password])
-    |> validate_email(opts)
+    |> cast(attrs, [:identifier, :password])
+    |> validate_identifier(opts)
     |> validate_password(opts)
   end
 
-  defp validate_email(changeset, opts) do
+  defp validate_identifier(changeset, opts) do
     changeset
-    |> validate_required([:email])
-    |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must have the @ sign and no spaces")
-    |> validate_length(:email, max: 160)
-    |> maybe_validate_unique_email(opts)
+    |> validate_required([:identifier])
+    |> validate_format(:identifier, ~r/^[^\s]+$/, message: "must have no spaces")
+    |> validate_length(:identifier, max: 160)
+    |> maybe_validate_unique_identifier(opts)
   end
 
   defp validate_password(changeset, opts) do
@@ -77,11 +77,11 @@ defmodule Animelodica.Accounts.User do
     end
   end
 
-  defp maybe_validate_unique_email(changeset, opts) do
-    if Keyword.get(opts, :validate_email, true) do
+  defp maybe_validate_unique_identifier(changeset, opts) do
+    if Keyword.get(opts, :validate_identifier, true) do
       changeset
-      |> unsafe_validate_unique(:email, Animelodica.Repo)
-      |> unique_constraint(:email)
+      |> unsafe_validate_unique(:identifier, Animelodica.Repo)
+      |> unique_constraint(:identifier)
     else
       changeset
     end
@@ -92,13 +92,13 @@ defmodule Animelodica.Accounts.User do
 
   It requires the email to change otherwise an error is added.
   """
-  def email_changeset(user, attrs, opts \\ []) do
+  def identifier_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email])
-    |> validate_email(opts)
+    |> cast(attrs, [:identifier])
+    |> validate_identifier(opts)
     |> case do
-      %{changes: %{email: _}} = changeset -> changeset
-      %{} = changeset -> add_error(changeset, :email, "did not change")
+      %{changes: %{identifier: _}} = changeset -> changeset
+      %{} = changeset -> add_error(changeset, :identifier, "did not change")
     end
   end
 

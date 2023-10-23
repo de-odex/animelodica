@@ -28,10 +28,10 @@ defmodule AnimelodicaWeb.UserRegistrationLiveTest do
       result =
         lv
         |> element("#registration_form")
-        |> render_change(user: %{"email" => "with spaces", "password" => "too short"})
+        |> render_change(user: %{"identifier" => "with spaces", "password" => "too short"})
 
       assert result =~ "Register"
-      assert result =~ "must have the @ sign and no spaces"
+      assert result =~ "must have no spaces"
       assert result =~ "should be at least 12 character"
     end
   end
@@ -40,8 +40,8 @@ defmodule AnimelodicaWeb.UserRegistrationLiveTest do
     test "creates account and logs the user in", %{conn: conn} do
       {:ok, lv, _html} = live(conn, ~p"/users/register")
 
-      email = unique_user_email()
-      form = form(lv, "#registration_form", user: valid_user_attributes(email: email))
+      identifier = unique_user_identifier()
+      form = form(lv, "#registration_form", user: valid_user_attributes(identifier: identifier))
       render_submit(form)
       conn = follow_trigger_action(form, conn)
 
@@ -50,20 +50,20 @@ defmodule AnimelodicaWeb.UserRegistrationLiveTest do
       # Now do a logged in request and assert on the menu
       conn = get(conn, "/")
       response = html_response(conn, 200)
-      assert response =~ email
+      assert response =~ identifier
       assert response =~ "Settings"
       assert response =~ "Log out"
     end
 
-    test "renders errors for duplicated email", %{conn: conn} do
+    test "renders errors for duplicated identifier", %{conn: conn} do
       {:ok, lv, _html} = live(conn, ~p"/users/register")
 
-      user = user_fixture(%{email: "test@email.com"})
+      user = user_fixture(%{identifier: "test@identifier.com"})
 
       result =
         lv
         |> form("#registration_form",
-          user: %{"email" => user.email, "password" => "valid_password"}
+          user: %{"identifier" => user.identifier, "password" => "valid_password"}
         )
         |> render_submit()
 

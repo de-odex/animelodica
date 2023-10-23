@@ -10,7 +10,6 @@ defmodule AnimelodicaWeb.UserLoginLiveTest do
 
       assert html =~ "Log in"
       assert html =~ "Register"
-      assert html =~ "Forgot your password?"
     end
 
     test "redirects if already logged in", %{conn: conn} do
@@ -32,7 +31,7 @@ defmodule AnimelodicaWeb.UserLoginLiveTest do
       {:ok, lv, _html} = live(conn, ~p"/users/log_in")
 
       form =
-        form(lv, "#login_form", user: %{email: user.email, password: password, remember_me: true})
+        form(lv, "#login_form", user: %{identifier: user.identifier, password: password, remember_me: true})
 
       conn = submit_form(form, conn)
 
@@ -46,12 +45,12 @@ defmodule AnimelodicaWeb.UserLoginLiveTest do
 
       form =
         form(lv, "#login_form",
-          user: %{email: "test@email.com", password: "123456", remember_me: true}
+          user: %{identifier: "test username", password: "123456", remember_me: true}
         )
 
       conn = submit_form(form, conn)
 
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Invalid email or password"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Invalid username or password"
 
       assert redirected_to(conn) == "/users/log_in"
     end
@@ -70,18 +69,5 @@ defmodule AnimelodicaWeb.UserLoginLiveTest do
       assert login_html =~ "Register"
     end
 
-    test "redirects to forgot password page when the Forgot Password button is clicked", %{
-      conn: conn
-    } do
-      {:ok, lv, _html} = live(conn, ~p"/users/log_in")
-
-      {:ok, conn} =
-        lv
-        |> element(~s|main a:fl-contains("Forgot your password?")|)
-        |> render_click()
-        |> follow_redirect(conn, ~p"/users/reset_password")
-
-      assert conn.resp_body =~ "Forgot your password?"
-    end
   end
 end
